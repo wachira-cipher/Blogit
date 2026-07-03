@@ -1,4 +1,10 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { useAuth } from "../../context/AuthContext";
+
+// API
+import { getDashboardStats } from "../../api/post.api";
+
+// Dashboard Components
 import StatCards from "./dashboard/StatCards";
 import RevenueCards from "./dashboard/RevenueCards";
 import SalesChartSection from "./dashboard/SalesChartSection";
@@ -9,25 +15,62 @@ import RecentTransactions from "./dashboard/RecentTransactions";
 import TopCustomers from "./dashboard/TopCustomers";
 import TopCategories from "./dashboard/TopCategories";
 import OrderStatistics from "./dashboard/OrderStatistics";
-import Footer from "./Footer";
 import SalesStatistics from "./dashboard/SalesStatistics";
 
 export default function AdminDashboard() {
+  const { user } = useAuth();
+
+  const [stats, setStats] = useState({
+    totalBlogs: 0,
+    publishedBlogs: 0,
+    draftBlogs: 0,
+    totalViews: 0,
+    todayPosts: 0,
+  });
+
   useEffect(() => {
     const preloader = document.getElementById("global-loader");
     if (preloader) preloader.remove();
+
+    const fetchStats = async () => {
+      try {
+        const { data } = await getDashboardStats();
+
+        if (data.success) {
+          setStats(data.stats);
+        }
+      } catch (error) {
+        console.error("Dashboard stats error:", error);
+      }
+    };
+
+    fetchStats();
   }, []);
+
+  // =========================
+  // DISPLAY NAME
+  // username -> first name -> role -> User
+  // =========================
+  const displayName =
+    user?.username?.trim() ||
+    user?.fullname?.trim()?.split(" ")[0] ||
+    (user?.role
+      ? user.role.charAt(0).toUpperCase() + user.role.slice(1)
+      : "User");
 
   return (
     <>
-
-
       {/* HEADER */}
       <div className="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-2">
         <div className="mb-3">
-          <h1 className="mb-1">Welcome, Admin</h1>
+          <h1 className="mb-1">Welcome, {displayName}</h1>
+
           <p className="fw-medium">
-            You have <span className="text-primary fw-bold">200+</span> Orders Today
+            You created{" "}
+            <span className="text-primary fw-bold">
+              {stats.todayPosts}
+            </span>{" "}
+            blog{stats.todayPosts !== 1 ? "s" : ""} today
           </p>
         </div>
 
@@ -35,6 +78,7 @@ export default function AdminDashboard() {
           <span className="input-icon-addon fs-16 text-gray-9">
             <i className="ti ti-calendar"></i>
           </span>
+
           <input
             type="text"
             className="form-control date-range bookingrange"
@@ -43,21 +87,10 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* ALERT */}
-      <div className="alert bg-orange-transparent alert-dismissible fade show mb-4">
-        <div>
-          <span><i className="ti ti-info-circle fs-14 text-orange me-2"></i></span>
-          <span>Your Product </span>
-          <span className="text-orange fw-semibold">
-            Apple iPhone 15 is running Low
-          </span>
-        </div>
-        <button className="btn-close" data-bs-dismiss="alert"></button>
-      </div>
+      {/* DASHBOARD SECTIONS */}
+      <StatCards stats={stats} />
 
-      {/* SECTIONS */}
-      <StatCards />
-      <RevenueCards />
+      <RevenueCards stats={stats} />
       <SalesChartSection />
 
       <div className="row">
@@ -67,11 +100,8 @@ export default function AdminDashboard() {
       </div>
 
       <div className="row">
-
         <SalesStatistics />
-
         <RecentTransactions />
-
       </div>
 
       <div className="row">
@@ -79,8 +109,6 @@ export default function AdminDashboard() {
         <TopCategories />
         <OrderStatistics />
       </div>
-
-
     </>
   );
 }

@@ -13,6 +13,8 @@ import {
   deleteAccount
 } from "../controllers/userController.js";
 
+import { getDashboardStats } from "../controllers/dashboardController.js";
+
 import { protect } from "../middleware/authMiddleware.js";
 import upload from "../middleware/upload.js";
 
@@ -43,5 +45,8 @@ router.put("/delete-account", protect, deleteAccount);
 
 // AVATAR
 router.put("/avatar", protect, upload.single("avatar"), uploadAvatar);
+
+
+router.get("/dashboard/stats", protect, getDashboardStats);
 
 export default router;

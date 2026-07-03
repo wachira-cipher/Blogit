@@ -31,3 +31,7 @@ export const deletePostImage = (postId, filename) => {
     data: { filename }
   });
 };
+
+export const getDashboardStats = () => {
+  return http.get("/users/dashboard/stats");
+};

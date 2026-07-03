@@ -1,102 +1,76 @@
 import React from "react";
 
-export default function RevenueCards() {
-
+export default function RevenueCards({ stats }) {
   const cards = [
     {
-      title: "Profit",
-      value: "$8,458,798",
+      title: "Active Sessions Today",
+      value: stats?.sessionsToday ?? 0,
       color: "cyan",
-      icon: "fa-layer-group",
-      change: "+35%",
+      icon: "ti-device-desktop",
+      change: "+Live",
       changeColor: "text-success",
-      link: "profit-and-loss.html",
+      link: "#",
     },
     {
-      title: "Invoice Due",
-      value: "$48,988,78",
+      title: "New Blog Activity",
+      value: stats?.todayPosts ?? 0,
       color: "teal",
-      icon: "ti-chart-pie",
-      change: "+35%",
+      icon: "ti-notebook",
+      change: "+Today",
       changeColor: "text-success",
-      link: "invoice-report.html",
+      link: "#",
     },
     {
-      title: "Total Expenses",
-      value: "$8,980,097",
+      title: "Total Engagement",
+      value: stats?.totalViews ?? 0,
       color: "orange",
-      icon: "ti-lifebuoy",
-      change: "+41%",
-      changeColor: "text-success",
-      link: "expense-list.html",
+      icon: "ti-eye",
+      change: "Views",
+      changeColor: "text-primary",
+      link: "#",
     },
     {
-      title: "Total Payment Returns",
-      value: "$78,458,798",
+      title: "Active Sessions",
+      value: stats?.activeSessions ?? 0,
       color: "indigo",
-      icon: "ti-hash",
-      change: "-20%",
-      changeColor: "text-danger",
-      link: "sales-report.html",
+      icon: "ti-users",
+      change: "+Online",
+      changeColor: "text-success",
+      link: "#",
     },
   ];
 
-
   return (
     <div className="row">
-
       {cards.map((card, index) => (
-
-        <div 
-          className="col-xl-3 col-sm-6 col-12 d-flex"
-          key={index}
-        >
-
+        <div className="col-xl-3 col-sm-6 col-12 d-flex" key={index}>
           <div className="card revenue-widget flex-fill">
-
             <div className="card-body">
 
+              {/* TOP SECTION */}
               <div className="d-flex align-items-center justify-content-between mb-3 pb-3 border-bottom">
-
                 <div>
                   <h4 className="mb-1">
-                    {card.value}
+                    {card.value?.toLocaleString?.() ?? card.value}
                   </h4>
-
-                  <p>
-                    {card.title}
-                  </p>
+                  <p>{card.title}</p>
                 </div>
 
-
-                <span 
+                <span
                   className={`revenue-icon bg-${card.color}-transparent text-${card.color}`}
                 >
-
-                  {card.icon.startsWith("fa") ? (
-                    <i className={`fa-solid ${card.icon} fs-16`}></i>
-                  ) : (
-                    <i className={`ti ${card.icon} fs-16`}></i>
-                  )}
-
+                  <i className={`ti ${card.icon} fs-16`}></i>
                 </span>
-
-
               </div>
 
-
+              {/* BOTTOM SECTION */}
               <div className="d-flex align-items-center justify-content-between">
-
                 <p className="mb-0">
-
                   <span className={`fs-13 fw-bold ${card.changeColor}`}>
                     {card.change}
-                  </span>
-
-                  {" "}vs Last Month
-
+                  </span>{" "}
+                  stats overview
                 </p>
-
 
                 <a
                   href={card.link}
@@ -104,19 +78,12 @@ export default function RevenueCards() {
                 >
                   View All
                 </a>
-
-
               </div>
 
-
             </div>
-
           </div>
-
         </div>
-
       ))}
-
     </div>
   );
 }
