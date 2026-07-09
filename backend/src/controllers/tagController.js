@@ -1,4 +1,5 @@
 import Tag from "../models/Tag.js";
+import Post from "../models/Post.js";
 // =========================
 // CREATE TAG
 // =========================
@@ -108,4 +109,115 @@ export const deleteTag = async (req, res) => {
             message: error.message || "Failed to delete tag",
         });
     }
+};
+
+// ===============================
+// GET POSTS BY TAG WITH PAGINATION
+// ===============================
+
+export const getTagPosts = async (req, res) => {
+
+    try {
+
+        const page = parseInt(req.query.page) || 1;
+
+        const limit = parseInt(req.query.limit) || 6;
+
+        const skip = (page - 1) * limit;
+
+
+        const tag = await Tag.findOne({
+            slug: req.params.slug
+        });
+
+
+        if (!tag) {
+
+            return res.status(404).json({
+
+                success: false,
+
+                message: "Tag not found"
+
+            });
+
+        }
+
+
+
+        const query = {
+
+            tags: tag._id,
+
+            status: "published"
+
+        };
+
+
+
+        const totalPosts =
+            await Post.countDocuments(query);
+
+
+
+        const posts =
+            await Post.find(query)
+
+                .populate("category")
+
+                .populate("author")
+
+                .populate("tags")
+
+                .sort({
+                    createdAt: -1
+                })
+
+                .skip(skip)
+
+                .limit(limit);
+
+
+
+        res.json({
+
+            success: true,
+
+            tag,
+
+            posts,
+
+            pagination: {
+
+                page,
+
+                limit,
+
+                totalPosts,
+
+                totalPages:
+                    Math.ceil(
+                        totalPosts / limit
+                    )
+
+            }
+
+        });
+
+
+
+    } catch(error) {
+
+
+        res.status(500).json({
+
+            success:false,
+
+            message:error.message
+
+        });
+
+
+    }
+
 };

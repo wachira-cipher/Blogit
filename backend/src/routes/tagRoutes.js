@@ -4,7 +4,8 @@ import {
   getTags,
   getTag,
   updateTag,
-  deleteTag
+  deleteTag,
+  getTagPosts,
 } from "../controllers/tagController.js";
 
 const router = express.Router();
@@ -14,6 +15,8 @@ router.post("/", createTag);
 
 // GET ALL
 router.get("/", getTags);
+
+router.get("/:slug/posts", getTagPosts);
 
 // GET ONE
 router.get("/:id", getTag);      // ✅ FIXED (no double //)

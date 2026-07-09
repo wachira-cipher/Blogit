@@ -24,3 +24,23 @@ export const updateCategory = (id, data) => {
 export const deleteCategory = (id) => {
   return http.delete(`/categories/${id}`);
 };
+
+export const getCategoriesWithCount = () => {
+
+  return http.get(
+    "/categories/with-count"
+  );
+
+};
+
+export const getCategoryPosts = (
+    slug,
+    page = 1,
+    limit = 6
+) => {
+
+    return http.get(
+        `/categories/${slug}/posts?page=${page}&limit=${limit}`
+    );
+
+};

@@ -2,6 +2,7 @@ import { Outlet } from "react-router-dom";
 import Header from "../components/common/Header";
 import Footer from "../components/common/Footer";
 import { useEffect } from "react";
+import { HomeProvider } from "../context/HomeContext";
 
 export default function PublicLayout() {
   useEffect(() => {
@@ -21,13 +22,15 @@ export default function PublicLayout() {
 
   return (
     <>
-      <Header />
+      <HomeProvider>
+        <Header />
 
-      <main className="main">
-        <Outlet />
-      </main>
+        <main className="main">
+          <Outlet />
+        </main>
 
-      <Footer />
+        <Footer />
+      </HomeProvider>
 
       {/* REQUIRED by template JS */}
       <div id="preloader"></div>

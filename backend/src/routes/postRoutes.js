@@ -7,7 +7,10 @@ import {
   getPosts,
   getPost,
   updatePost,
-  deletePost
+  deletePost,
+  getHomePosts,
+  searchPosts,
+  getRecentPosts,
 } from "../controllers/postController.js";
 
 
@@ -15,10 +18,10 @@ const router = express.Router();
 
 
 //router.post(
- // "/",
- // protect,
- // upload.array("images", 10), // ✅ REQUIRED
- // createPost
+// "/",
+// protect,
+// upload.array("images", 10), // ✅ REQUIRED
+// createPost
 //);
 router.post(
   "/",
@@ -31,13 +34,30 @@ router.post(
   createPost
 );
 
+router.get("/search", searchPosts);
+
+
 // READ ALL
 router.get(
   "/",
   getPosts
 );
 
+router.get(
+  "/home",
+  getHomePosts
+);
 
+router.get(
+  "/recent",
+  getRecentPosts
+);
+
+
+router.get(
+  "/:slug",
+  getPost
+);
 // READ SINGLE BY SLUG
 router.get(
   "/:slug",
@@ -57,6 +77,10 @@ router.delete(
   "/:id",
   deletePost
 );
+
+
+
+
 
 
 

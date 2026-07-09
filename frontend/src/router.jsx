@@ -26,6 +26,7 @@ import AllTags from "./pages/admin/tags/AllTags";
 import CreateTag from "./pages/admin/tags/CreateTag";
 import GeneralSettings from "./pages/admin/settings/GeneralSettings";
 import SecuritySettings from "./pages/admin/settings/SecuritySettings";
+import Tag from "./pages/public/Tag";
 
 
 const router = createBrowserRouter([
@@ -50,13 +51,18 @@ const router = createBrowserRouter([
 
 
       {
-        path: "category",
+        path: "category/:slug",
         element: <Category />
+      },
+
+       {
+        path: "tag/:slug",
+        element: <Tag />
       },
 
 
       {
-        path: "blog-details",
+        path: "blog-details/:slug",
         element: <BlogDetails />
       },
 
@@ -137,7 +143,7 @@ const router = createBrowserRouter([
             path: "dashboard",
             element: <Dashboard />,
           },
-         
+
           {
             path: "settings",
             children: [
@@ -145,7 +151,7 @@ const router = createBrowserRouter([
                 path: "general-settings",
                 element: <GeneralSettings />,
               },
-               {
+              {
                 path: "security-settings",
                 element: <SecuritySettings />,
               }

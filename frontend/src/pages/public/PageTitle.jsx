@@ -32,7 +32,9 @@ export default function PageTitle({
                   {isLast ? (
                     item.label
                   ) : (
-                    <Link to={item.path}>{item.label}</Link>
+                    <Link to={item.path || item.to}>
+                      {item.label}
+                    </Link>
                   )}
                 </li>
               );

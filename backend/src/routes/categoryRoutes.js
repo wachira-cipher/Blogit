@@ -5,13 +5,17 @@ import {
   getCategories,
   getCategory,
   updateCategory,
-  deleteCategory
+  deleteCategory,getCategoriesWithCount,
+  getCategoryPosts,
+
 } from "../controllers/categoryController.js";
 
 const router = express.Router();
 
 // CREATE
 router.post("/", createCategory);
+
+router.get("/with-count", getCategoriesWithCount);
 
 // GET ALL
 router.get("/", getCategories);
@@ -24,5 +28,10 @@ router.put("/:id", updateCategory);
 
 // DELETE
 router.delete("/:id", deleteCategory);
+
+router.get(
+ "/:slug/posts",
+ getCategoryPosts
+);
 
 export default router;

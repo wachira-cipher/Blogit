@@ -30,7 +30,7 @@ export default function Sidebar() {
 
       {/* Logo */}
       <div className="sidebar-logo active">
-        <Link to="/" className="logo logo-normal">
+        <Link to="/dashboard" className="logo logo-normal">
           <h1 className="sitename">Blogit<span>.</span></h1>
 
         </Link>

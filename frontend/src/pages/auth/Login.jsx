@@ -77,10 +77,10 @@ export default function Login() {
 
                   <div className="login-logo logo-normal">
 
-                    <img
+                    <Link to="/"><img
                       src="/assets/img/logo.svg"
                       alt="Logo"
-                    />
+                    /></Link>
 
                   </div>
 

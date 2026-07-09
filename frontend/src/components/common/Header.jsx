@@ -1,7 +1,34 @@
 import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
 import UserMenu from "./UserMenu";
+import { getCategories } from "../../api/category.api";
 
 export default function Header() {
+  const [categories, setCategories] = useState([]);
+  const [categoriesOpen, setCategoriesOpen] = useState(false);
+
+  const loadCategories = async () => {
+    try {
+      const res = await getCategories();
+
+      console.log("Categories API:", res.data);
+
+      setCategories(res.data);
+
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    // Initial load
+    loadCategories();
+
+    // Refresh every minute
+    const interval = setInterval(loadCategories, 60000);
+
+    return () => clearInterval(interval);
+  }, []);
   return (
     <header id="header" className="header position-relative">
       <div className="container-fluid container-xl position-relative">
@@ -29,22 +56,22 @@ export default function Header() {
               <a href="#" className="instagram">
                 <i className="bi bi-instagram"></i>
               </a>
-              </div>
-              <div className="social-links">
+            </div>
+            <div className="social-links">
               <a href="#" className="facebook">
-                
+
               </a>
               <a href="#" className="twitter">
-               
+
               </a>
               <a href="#" className="instagram">
-               
+
               </a>
             </div>
-              {/* Auth links */}
-           <div className="social-links">
-  <UserMenu />
-</div>
+            {/* Auth links */}
+            <div className="social-links">
+              <UserMenu />
+            </div>
 
             {/* Search form */}
             <form className="search-form ms-4">
@@ -71,27 +98,62 @@ export default function Header() {
 
               <li><Link to="/" className="active">Home</Link></li>
               <li><Link to="/about">About</Link></li>
-            
+
               <li><Link to="/blog-details">Blog Details</Link></li>
-              
+
 
               {/* Pages Dropdown */}
-              <li className="dropdown">
-                <a href="#">
+              <li className={`dropdown ${categoriesOpen ? "dropdown-active" : ""}`}>
+
+                <a
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setCategoriesOpen(prev => !prev);
+                  }}
+                >
+
                   <span>Categories</span>
-                  <i className="bi bi-chevron-down toggle-dropdown"></i>
+
+                  <i
+                    className={`bi bi-chevron-down toggle-dropdown ${categoriesOpen ? "rotate-180" : ""
+                      }`}
+                  ></i>
+
                 </a>
 
-                <ul>
-                  <li><Link to="/about">Technology</Link></li>
-                  <li><Link to="/category">Sports</Link></li>
-                  <li><Link to="/blog-details">Education</Link></li>
-                  <li><Link to="/author-profile">Travel</Link></li>
-                  <li><Link to="/search-results">LifeStyle</Link></li>
-                  <li><Link to="/404">Design</Link></li>
 
-                 
+                <ul>
+
+                  {categories.length > 0 ? (
+
+                    categories.map((category) => (
+
+                      <li key={category._id}>
+
+                        <Link
+                          to={`/category/${category.slug}`}
+                          onClick={() => setCategoriesOpen(false)}
+                        >
+                          {category.name}
+                        </Link>
+
+                      </li>
+
+                    ))
+
+                  ) : (
+
+                    <li>
+                      <span className="dropdown-empty">
+                        No categories found
+                      </span>
+                    </li>
+
+                  )}
+
                 </ul>
+
               </li>
 
               <li><Link to="/contact">Contact</Link></li>

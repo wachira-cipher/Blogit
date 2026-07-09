@@ -1,48 +1,186 @@
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { getRecentPosts } from "../../../api/post.api";
+
+
+
 export default function RecentPostsWidget() {
-  const posts = [
-    {
-      img: "assets/blog/img/blog/blog-post-square-1.webp",
-      title: "Nihil blanditiis at in nihil autem",
-      date: "Jan 1, 2020",
-    },
-    {
-      img: "assets/blog/img/blog/blog-post-square-2.webp",
-      title: "Quidem autem et impedit",
-      date: "Jan 1, 2020",
-    },
-    {
-      img: "assets/blog/img/blog/blog-post-square-3.webp",
-      title: "Id quia et et ut maxime similique",
-      date: "Jan 1, 2020",
-    },
-    {
-      img: "assets/blog/img/blog/blog-post-square-4.webp",
-      title: "Laborum corporis quo dara net para",
-      date: "Jan 1, 2020",
-    },
-    {
-      img: "assets/blog/img/blog/blog-post-square-5.webp",
-      title: "Et dolores corrupti quae illo",
-      date: "Jan 1, 2020",
-    },
-  ];
+
+
+  const [posts, setPosts] = useState([]);
+
+  const [loading, setLoading] = useState(true);
+
+
+
+  useEffect(() => {
+
+
+    const loadPosts = async () => {
+
+      try {
+
+
+        const res = await getRecentPosts();
+
+
+        if (res.data.success) {
+
+          setPosts(
+            res.data.posts
+          );
+
+        }
+
+
+      } catch (error) {
+
+        console.log(error);
+
+      }
+
+      finally {
+
+        setLoading(false);
+
+      }
+
+
+    };
+
+
+    loadPosts();
+
+
+  }, []);
+
+
+
+
 
   return (
+
     <div className="recent-posts-widget widget-item">
-      <h3 className="widget-title">Recent Posts</h3>
 
-      {posts.map((post, index) => (
-        <div className="post-item" key={index}>
-          <img src={post.img} alt="post" className="flex-shrink-0" />
 
-          <div>
-            <h4>
-              <a href="/post">{post.title}</a>
-            </h4>
-            <time>{post.date}</time>
+      <h3 className="widget-title">
+        Recent Posts
+      </h3>
+
+
+
+      {
+        loading && (
+
+          <p>
+            Loading posts...
+          </p>
+
+        )
+
+      }
+
+
+
+      {
+        !loading && posts.length === 0 && (
+
+          <p>
+            No recent posts found
+          </p>
+
+        )
+
+      }
+
+
+
+
+      {
+        posts.map((post) => (
+
+
+          <div
+            className="post-item"
+            key={post._id}
+          >
+
+
+            <img
+
+              src={
+                post.images?.length
+
+                  ?
+
+                  `${import.meta.env.VITE_API_URL}/uploads/${post.images[0]}`
+
+                  :
+
+                  "/assets/blog/img/blog/blog-post-square-1.webp"
+
+              }
+
+              alt={post.title}
+
+              className="flex-shrink-0"
+
+            />
+
+
+
+            <div>
+
+
+              <h4>
+
+                <Link
+                  to={`/blog-details/${post.slug}`}
+                >
+
+                  {post.title}
+
+                </Link>
+
+              </h4>
+
+
+
+              <time>
+
+                {
+                  new Date(
+                    post.createdAt
+                  )
+                    .toLocaleDateString(
+                      "en-US",
+                      {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric"
+                      }
+                    )
+                }
+
+              </time>
+
+
+            </div>
+
+
           </div>
-        </div>
-      ))}
+
+
+        ))
+
+      }
+
+
+
     </div>
+
+
   );
+
+
 }

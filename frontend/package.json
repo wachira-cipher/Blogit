@@ -23,6 +23,7 @@
     "react-heatmap-grid": "^0.9.1",
     "react-router-dom": "^7.17.0",
     "react-select": "^5.10.2",
+    "react-spinners": "^0.17.0",
     "react-toastify": "^11.1.0",
     "recharts": "^3.9.0",
     "swiper": "^12.2.0"

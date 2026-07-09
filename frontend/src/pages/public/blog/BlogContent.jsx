@@ -1,48 +1,130 @@
 import { Link } from "react-router-dom";
+import { useAuth } from "../../../context/AuthContext";
 
-export default function BlogContent() {
+const API_URL = import.meta.env.VITE_API_URL;
+
+
+export default function BlogContent({ post }) {
+  const { user } = useAuth();
+
+
+  if (!post) {
+    return (
+      <div className="container py-5">
+        <p>Loading article...</p>
+      </div>
+    );
+  }
+
+
+  const mainImage = post.images?.length
+    ? `${API_URL}/uploads/${post.images[0]}`
+    : "/assets/blog/img/blog/blog-post-3.webp";
+
+
+
+  const authorImage =
+    post.author?.avatar
+      ? `${API_URL}/${post.author.avatar}`
+      : "/assets/blog/img/person/person-f-8.webp";
+
+
+
+  const formattedDate = post.createdAt
+    ? new Date(post.createdAt).toLocaleDateString(
+      "en-US",
+      {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      }
+    )
+    : "";
+
+
+
   return (
-    <section id="blog-details" className="blog-details section">
+    <section
+      id="blog-details"
+      className="blog-details section"
+    >
 
-      <div className="container" data-aos="fade-up">
+      <div
+        className="container"
+        data-aos="fade-up"
+      >
 
         <article className="article">
 
 
+
           {/* Hero Image */}
-          <div className="hero-img" data-aos="zoom-in">
+
+          <div
+            className="hero-img"
+            data-aos="zoom-in"
+          >
+
 
             <img
-              src="assets/blog/img/blog/blog-post-3.webp"
-              alt="Featured blog image"
+              src={mainImage}
+              alt={post.title}
               className="img-fluid"
               loading="lazy"
             />
 
 
+
             <div className="meta-overlay">
+
 
               <div className="meta-categories">
 
-                <Link to="#" className="category">
-                  Web Development
-                </Link>
 
-                <span className="divider">•</span>
+                {post.category && (
+
+                  <Link
+                    to={`/category/${post.category.slug}`}
+                    className="category"
+                  >
+
+                    {post.category.name}
+
+                  </Link>
+
+                )}
+
+
+
+                {post.category && (
+
+                  <span className="divider">
+                    •
+                  </span>
+
+                )}
+
 
 
                 <span className="reading-time">
+
                   <i className="bi bi-clock"></i>
-                  6 min read
+
+                  {post.readTime || "5 min read"}
+
                 </span>
 
 
+
               </div>
+
 
             </div>
 
 
           </div>
+
+
 
 
 
@@ -53,14 +135,20 @@ export default function BlogContent() {
           >
 
 
+
+
             {/* Header */}
 
             <div className="content-header">
 
 
               <h1 className="title">
-                Modern Web Development: Best Practices and Future Trends for 2025
+
+                {post.title}
+
               </h1>
+
+
 
 
 
@@ -69,276 +157,378 @@ export default function BlogContent() {
 
                 <div className="author-details">
 
+
                   <img
-                    src="assets/img/person/person-f-8.webp"
-                    alt="Author"
+                    src={authorImage}
+                    alt={post.author?.fullname}
                     className="author-img"
                   />
 
 
+
                   <div className="info">
 
+
                     <h4>
-                      Michael Chen
+
+                      {post.author?.fullname || "Unknown Author"}
+
                     </h4>
 
+
+
+
                     <span className="role">
-                      Senior Web Developer
+
+                      {post.author?.role || "Author"}
+
                     </span>
+
+
 
                   </div>
 
+
                 </div>
+
+
 
 
 
                 <div className="post-meta">
 
+
                   <span className="date">
 
+
                     <i className="bi bi-calendar3"></i>
-                    Mar 15, 2025
+
+                    {formattedDate}
+
 
                   </span>
+
+
+
 
 
                   <span className="divider">
+
                     •
+
                   </span>
+
+
+
 
 
                   <span className="comments">
 
+
                     <i className="bi bi-chat-text"></i>
-                    18 Comments
+
+
+                    {post.comments?.length || 0}
+                    {" "}
+                    Comments
+
 
                   </span>
+
 
 
                 </div>
 
 
+
+
               </div>
 
 
+
+
             </div>
+
+
 
 
 
 
             {/* Article Body */}
 
+
             <div className="content">
 
 
-              <p className="lead">
-                The landscape of web development continues to evolve at an
-                unprecedented pace, bringing new technologies, frameworks, and
-                methodologies that reshape how we build modern web applications.
-              </p>
 
+              {post.excerpt && (
 
+                <p className="lead">
 
-              <p>
-                As we delve into 2025, the web development ecosystem has
-                transformed dramatically, introducing innovative approaches to
-                building faster, more secure, and highly engaging web experiences.
-                This comprehensive guide explores the latest trends and best
-                practices that are defining the future of web development.
-              </p>
+                  {post.excerpt}
 
-
-
-
-              <div className="content-image right-aligned">
-
-
-                <img
-                  src="assets/blog/img/blog/blog-hero-2.webp"
-                  className="img-fluid"
-                  alt="Modern web development tools"
-                  loading="lazy"
-                />
-
-
-                <figcaption>
-                  Modern development environments emphasize collaboration and efficiency
-                </figcaption>
-
-
-              </div>
-
-
-
-
-              <h2>
-                The Rise of Web Components
-              </h2>
-
-
-              <p>
-                Web Components have become increasingly crucial in modern web
-                development, offering a standardized way to create reusable custom
-                elements. Key advantages include:
-              </p>
-
-
-
-              <ul>
-
-                <li>
-                  Enhanced code reusability across different frameworks
-                </li>
-
-                <li>
-                  Better encapsulation of functionality
-                </li>
-
-                <li>
-                  Improved maintenance and scalability
-                </li>
-
-                <li>
-                  Framework-agnostic component development
-                </li>
-
-              </ul>
-
-
-
-
-              {/* Highlight */}
-
-              <div className="highlight-box">
-
-                <h3>
-                  Key Trends in 2025
-                </h3>
-
-
-                <ul className="trend-list">
-
-
-                  <li>
-                    <i className="bi bi-lightning-charge"></i>
-                    <span>
-                      Edge Computing and Serverless Architecture
-                    </span>
-                  </li>
-
-
-
-                  <li>
-                    <i className="bi bi-shield-check"></i>
-                    <span>
-                      Enhanced Security Measures
-                    </span>
-                  </li>
-
-
-
-
-                  <li>
-                    <i className="bi bi-phone"></i>
-                    <span>
-                      Progressive Web Apps (PWAs)
-                    </span>
-                  </li>
-
-
-                </ul>
-
-
-              </div>
-
-
-
-
-              <h2>
-                Performance Optimization
-              </h2>
-
-
-              <p>
-                Performance remains a critical factor in web development, with an
-                increasing focus on Core Web Vitals and user experience metrics.
-                Modern applications must be optimized for both speed and efficiency.
-              </p>
-
-
-
-
-              <blockquote>
-
-                <p>
-                  "The future of web development lies not just in writing code,
-                  but in creating seamless, accessible, and performant experiences
-                  that work for everyone, everywhere."
                 </p>
 
-
-                <cite>
-                  Emily Thompson, Web Performance Architect
-                </cite>
-
-
-              </blockquote>
+              )}
 
 
 
 
 
 
-              {/* Cards */}
+              {post.description && (
 
-              <div className="content-grid">
+                <p>
 
-                <div className="row g-4">
+                  {post.description}
 
+                </p>
 
-                  <div className="col-md-6">
-
-                    <div className="info-card">
-
-                      <i className="bi bi-speedometer2"></i>
-
-                      <h4>
-                        Performance Metrics
-                      </h4>
+              )}
 
 
-                      <p>
-                        Focus on Core Web Vitals and user-centric performance
-                        metrics for better search rankings and user experience.
-                      </p>
+              {/* Additional Images */}
+
+              {post.images?.length > 1 && (
+
+                <div className="content-image right-aligned">
 
 
-                    </div>
-
-                  </div>
-
-
-
-
-                  <div className="col-md-6">
-
-                    <div className="info-card">
-
-                      <i className="bi bi-universal-access"></i>
+                  <img
+                    src={`${API_URL}/uploads/${post.images[1]}`}
+                    className="img-fluid"
+                    alt={post.title}
+                    loading="lazy"
+                  />
 
 
-                      <h4>
-                        Accessibility
-                      </h4>
+                  <figcaption>
+
+                    Additional article image
+
+                  </figcaption>
 
 
-                      <p>
-                        Implementing WCAG guidelines and ensuring web applications
-                        are accessible to all users across different devices.
-                      </p>
+                </div>
+
+              )}
 
 
-                    </div>
+
+
+
+
+              {/* Optional Content Sections */}
+
+              {post.sections?.map((section, index) => (
+
+                <div key={index}>
+
+
+                  {section.heading && (
+
+                    <h2>
+
+                      {section.heading}
+
+                    </h2>
+
+                  )}
+
+
+
+                  {section.text && (
+
+                    <p>
+
+                      {section.text}
+
+                    </p>
+
+                  )}
+
+
+
+
+                  {section.list?.length > 0 && (
+
+                    <ul>
+
+                      {
+                        section.list.map((item, i) => (
+
+                          <li key={i}>
+
+                            {item}
+
+                          </li>
+
+                        ))
+                      }
+
+                    </ul>
+
+                  )}
+
+
+
+                </div>
+
+              ))}
+
+
+
+
+
+
+              {/* Highlight Box */}
+
+
+              {post.highlights?.length > 0 && (
+
+                <div className="highlight-box">
+
+
+                  <h3>
+
+                    Key Highlights
+
+                  </h3>
+
+
+
+                  <ul className="trend-list">
+
+
+                    {
+                      post.highlights.map((item, index) => (
+
+                        <li key={index}>
+
+
+                          <i className="bi bi-lightning-charge"></i>
+
+
+                          <span>
+
+                            {item}
+
+                          </span>
+
+
+                        </li>
+
+
+                      ))
+                    }
+
+
+                  </ul>
+
+
+
+                </div>
+
+              )}
+
+
+
+
+
+
+              {/* Quote */}
+
+
+              {post.quote?.text && (
+
+                <blockquote>
+
+
+                  <p>
+
+                    "{post.quote.text}"
+
+                  </p>
+
+
+                  {post.quote.author && (
+
+                    <cite>
+
+                      {post.quote.author}
+
+                    </cite>
+
+                  )}
+
+
+                </blockquote>
+
+              )}
+
+
+
+
+
+
+
+              {/* Content Cards */}
+
+
+              {post.cards?.length > 0 && (
+
+                <div className="content-grid">
+
+
+                  <div className="row g-4">
+
+
+                    {
+                      post.cards.map((card, index) => (
+
+                        <div
+                          className="col-md-6"
+                          key={index}
+                        >
+
+
+                          <div className="info-card">
+
+
+                            {card.icon && (
+
+                              <i className={card.icon}></i>
+
+                            )}
+
+
+
+                            <h4>
+
+                              {card.title}
+
+                            </h4>
+
+
+
+
+                            <p>
+
+                              {card.description}
+
+                            </p>
+
+
+                          </div>
+
+
+                        </div>
+
+
+                      ))
+                    }
+
+
 
                   </div>
 
@@ -346,27 +536,18 @@ export default function BlogContent() {
                 </div>
 
 
-              </div>
+              )}
 
 
 
 
-
-              <h2>
-                Looking Forward
-              </h2>
-
-
-              <p>
-                As we continue through 2025, web development practices will
-                further evolve, embracing new technologies while maintaining a
-                strong foundation in performance, accessibility, and user
-                experience.
-              </p>
 
 
 
             </div>
+
+
+
 
 
 
@@ -376,90 +557,152 @@ export default function BlogContent() {
             {/* Bottom Meta */}
 
 
+
             <div className="meta-bottom">
 
 
 
-              <div className="tags-section">
-
-                <h4>
-                  Related Topics
-                </h4>
 
 
-                <div className="tags">
+              {/* Tags */}
 
-                  <Link to="#" className="tag">
-                    Web Development
-                  </Link>
 
-                  <Link to="#" className="tag">
-                    Performance
-                  </Link>
+              {post.tags?.length > 0 && (
 
-                  <Link to="#" className="tag">
-                    Best Practices
-                  </Link>
+                <div className="tags-section">
 
-                  <Link to="#" className="tag">
-                    Trends
-                  </Link>
 
-                  <Link to="#" className="tag">
-                    2025
-                  </Link>
+                  <h4>
+
+                    Related Topics
+
+                  </h4>
+
+
+
+                  <div className="tags">
+
+
+                    {
+                      post.tags.map((tag) => (
+
+
+                        <Link
+
+                          key={tag._id}
+
+                          to={`/tag/${tag.slug}`}
+
+                          className="tag"
+
+                        >
+
+                          {tag.name}
+
+
+                        </Link>
+
+
+                      ))
+                    }
+
+
+                  </div>
 
 
                 </div>
 
-
-              </div>
-
+              )}
 
 
 
+
+
+
+
+
+              {/* Share Section */}
 
 
               <div className="share-section">
 
+
                 <h4>
+
                   Share Article
+
                 </h4>
+
+
 
 
                 <div className="social-links">
 
 
-                  <Link to="#" className="twitter">
+
+                  <Link
+                    to="#"
+                    className="twitter"
+                  >
+
                     <i className="bi bi-twitter-x"></i>
+
                   </Link>
 
 
-                  <Link to="#" className="facebook">
-                    <i className="bi bi-facebook"></i>
-                  </Link>
 
-
-                  <Link to="#" className="linkedin">
-                    <i className="bi bi-linkedin"></i>
-                  </Link>
 
 
                   <Link
                     to="#"
-                    className="copy-link"
-                    title="Copy Link"
+                    className="facebook"
                   >
 
-                    <i className="bi bi-link-45deg"></i>
+                    <i className="bi bi-facebook"></i>
 
                   </Link>
+
+
+
+
+
+                  <Link
+                    to="#"
+                    className="linkedin"
+                  >
+
+                    <i className="bi bi-linkedin"></i>
+
+                  </Link>
+
+
+
+
+
+                  <a
+                    href="#"
+                    className="copy-link"
+                    title="Copy Link"
+                    onClick={(e) => {
+                      e.preventDefault();
+
+                      navigator.clipboard.writeText(
+                        window.location.href
+                      );
+                    }}
+                  >
+                    <i className="bi bi-link-45deg"></i>
+                  </a>
+
+
 
 
                 </div>
 
 
+
               </div>
+
 
 
 
@@ -467,7 +710,14 @@ export default function BlogContent() {
 
 
 
+
+
+
+
           </div>
+
+
+
 
 
         </article>
@@ -478,4 +728,5 @@ export default function BlogContent() {
 
     </section>
   );
+
 }

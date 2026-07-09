@@ -1,104 +1,93 @@
+import { useHome } from "../../context/HomeContext";
 import PostCard from "../posts/PostCard";
 
 
 export default function HeroSection() {
 
+
+  const {
+    heroPosts
+  } = useHome();
+
+
+
   return (
 
-  <>
-
-      <div 
-        className="container"
-        data-aos="fade-up"
-        data-aos-delay="100"
-      >
+    <div
+      className="container"
+      data-aos="fade-up"
+      data-aos-delay="100"
+    >
 
 
-        <div className="blog-grid">
+      <div className="blog-grid">
 
 
-          <PostCard
-
-            image="/assets/blog/img/blog/blog-post-3.webp"
-
-            date="Apr. 14th, 2025"
-
-            category="Technology"
-
-            title="Lorem ipsum dolor sit amet, consectetur adipiscing elit"
-
-            featured={true}
-
-          />
+        {
+          heroPosts.map((post,index)=>(
 
 
-          <PostCard
+            <PostCard
 
-            image="/assets/blog/img/blog/blog-post-portrait-1.webp"
-
-            date="Apr. 14th, 2025"
-
-            category="Security"
-
-            title="Sed do eiusmod tempor incididunt ut labore"
-
-            delay={100}
-
-          />
+              key={post._id}
 
 
-          <PostCard
-
-            image="/assets/blog/img/blog/blog-post-9.webp"
-
-            date="Apr. 14th, 2025"
-
-            category="Career"
-
-            title="Ut enim ad minim veniam, quis nostrud exercitation"
-
-            delay={200}
-
-          />
+              image={
+                post.image
+                ? `http://localhost:5000/${post.image}`
+                : "/assets/blog/img/blog/blog-post-3.webp"
+              }
 
 
-          <PostCard
-
-            image="/assets/blog/img/blog/blog-post-7.webp"
-
-            date="Apr. 14th, 2025"
-
-            category="Cloud"
-
-            title="Adipiscing elit, sed do eiusmod tempor incididunt"
-
-            delay={300}
-
-          />
+              date={
+                new Date(post.createdAt)
+                .toLocaleDateString(
+                  "en-US",
+                  {
+                    month:"short",
+                    day:"numeric",
+                    year:"numeric"
+                  }
+                )
+              }
 
 
-          <PostCard
-
-            image="/assets/blog/img/blog/blog-post-6.webp"
-
-            date="Apr. 14th, 2025"
-
-            category="Programming"
-
-            title="Excepteur sint occaecat cupidatat non proident"
-
-            delay={400}
-
-          />
+              category={
+                post.category?.name || "General"
+              }
 
 
-        </div>
+              title={
+                post.title
+              }
+
+
+              slug={
+                post.slug
+              }
+
+
+              featured={
+                index === 0
+              }
+
+
+              delay={
+                index * 100
+              }
+
+
+            />
+
+
+          ))
+        }
 
 
       </div>
 
 
-    </>
+    </div>
 
   );
 
