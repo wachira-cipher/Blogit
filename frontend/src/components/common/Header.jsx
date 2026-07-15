@@ -99,9 +99,6 @@ export default function Header() {
               <li><Link to="/" className="active">Home</Link></li>
               <li><Link to="/about">About</Link></li>
 
-              <li><Link to="/blog-details">Blog Details</Link></li>
-
-
               {/* Pages Dropdown */}
               <li className={`dropdown ${categoriesOpen ? "dropdown-active" : ""}`}>
 

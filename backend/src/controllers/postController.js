@@ -276,7 +276,7 @@ export const getHomePosts = async (req, res) => {
       // Hero - most viewed posts
       Post.find(publishedPosts)
         .sort({ views: -1 })
-        .limit(3)
+        .limit(10)
         .populate("author category"),
 
 

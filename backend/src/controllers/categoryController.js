@@ -101,9 +101,7 @@ export const updateCategory = async (req, res) => {
   }
 };
 
-
 export const getCategoriesWithCount = async (req, res) => {
-
   try {
 
     const categories = await Category.aggregate([
@@ -111,17 +109,20 @@ export const getCategoriesWithCount = async (req, res) => {
       {
         $lookup: {
           from: "posts",
-          localField: "_id",
-          foreignField: "category",
+          let: { categoryId: "$_id" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$category", "$$categoryId"] },
+                    { $eq: ["$status", "published"] }
+                  ]
+                }
+              }
+            }
+          ],
           as: "posts"
-        }
-      },
-
-      {
-        $addFields: {
-          count: {
-            $size: "$posts"
-          }
         }
       },
 
@@ -129,7 +130,7 @@ export const getCategoriesWithCount = async (req, res) => {
         $project: {
           name: 1,
           slug: 1,
-          count: 1
+          count: { $size: "$posts" }
         }
       },
 
@@ -141,26 +142,19 @@ export const getCategoriesWithCount = async (req, res) => {
 
     ]);
 
-
     res.json({
-
       success: true,
       categories
-
     });
-
 
   } catch (error) {
 
     res.status(500).json({
-
       success: false,
       message: error.message
-
     });
 
   }
-
 };
 
 

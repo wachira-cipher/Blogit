@@ -20,7 +20,7 @@ export default function LatestPostCard({ post }) {
             alt={post.title}
             className="img-fluid"
             onError={(e) => {
-              e.target.src = "/assets/blog/img/blog/blog-post-1.webp";
+              e.target.src = "assets/blog/img/blog/blog-post-1.webp";
             }}
           />
 

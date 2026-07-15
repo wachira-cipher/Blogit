@@ -8,6 +8,12 @@ import "swiper/css";
 import { useHome } from "../../context/HomeContext";
 
 
+const API_URL = import.meta.env.VITE_API_URL;
+
+const FALLBACK_IMAGE =
+"/assets/blog/img/blog/blog-post-portrait-1.webp";
+
+
 export default function FeaturedPostsSection() {
 
 
@@ -22,7 +28,6 @@ export default function FeaturedPostsSection() {
     <section id="featured-posts" className="featured-posts section">
 
 
-      {/* Section Title */}
       <div className="container section-title" data-aos="fade-up">
 
         <h2>
@@ -51,53 +56,66 @@ export default function FeaturedPostsSection() {
         data-aos-delay="100"
       >
 
-
-
-        <Swiper
-
-          modules={[Autoplay]}
-
-          loop={featuredPosts.length > 1}
-
-          speed={800}
-
-          autoplay={{
-            delay:5000
-          }}
-
-          spaceBetween={30}
-
-
-          breakpoints={{
-
-            320:{
-              slidesPerView:1,
-              spaceBetween:20
-            },
-
-
-            768:{
-              slidesPerView:2,
-              spaceBetween:20
-            },
-
-
-            1200:{
-              slidesPerView:3,
-              spaceBetween:30
-            }
-
-          }}
-
-        >
-
-
-
         {
-          featuredPosts.map((post)=>{
+          featuredPosts.length === 0 ? (
+
+            <div className="text-center py-5">
+
+              <h4>
+                No featured posts available.
+              </h4>
+
+              <p className="text-muted">
+                Check back soon for newly published articles.
+              </p>
+
+            </div>
+
+          ) : (
 
 
-            return (
+          <Swiper
+
+            modules={[Autoplay]}
+
+            loop={featuredPosts.length > 1}
+
+            speed={800}
+
+            autoplay={{
+              delay:5000
+            }}
+
+            spaceBetween={30}
+
+
+            breakpoints={{
+
+              320:{
+                slidesPerView:1,
+                spaceBetween:20
+              },
+
+
+              768:{
+                slidesPerView:3,
+                spaceBetween:20
+              },
+
+
+              1200:{
+                slidesPerView:4,
+                spaceBetween:30
+              }
+
+            }}
+
+          >
+
+
+          {
+            featuredPosts.map((post)=>(
+
 
               <SwiperSlide key={post._id}>
 
@@ -108,14 +126,23 @@ export default function FeaturedPostsSection() {
                   <img
 
                     src={
-                      post.images?.length
+                      post.images?.[0]
                       ?
-                      `http://localhost:5000/uploads/${post.images[0]}`
+                      `${API_URL}/uploads/${post.images[0]}`
                       :
-                      "/assets/blog/img/blog/blog-post-portrait-1.webp"
+                      FALLBACK_IMAGE
                     }
 
                     alt={post.title}
+
+                    onError={(e)=>{
+
+                      e.currentTarget.onerror=null;
+
+                      e.currentTarget.src =
+                      FALLBACK_IMAGE;
+
+                    }}
 
                   />
 
@@ -133,7 +160,8 @@ export default function FeaturedPostsSection() {
                         <i className="bi bi-person"></i>
 
                         {
-                          post.author?.fullname || "Admin"
+                          post.author?.fullname ||
+                          "Admin"
                         }
 
                       </span>
@@ -145,7 +173,9 @@ export default function FeaturedPostsSection() {
                         <i className="bi bi-clock"></i>
 
                         {
-                          new Date(post.createdAt)
+                          new Date(
+                            post.createdAt
+                          )
                           .toLocaleDateString(
                             "en-US",
                             {
@@ -173,14 +203,12 @@ export default function FeaturedPostsSection() {
                       </span>
 
 
-
                     </div>
 
 
 
 
                     <h2>
-
 
                       <Link
                         to={`/blog-details/${post.slug}`}
@@ -191,7 +219,6 @@ export default function FeaturedPostsSection() {
                         }
 
                       </Link>
-
 
                     </h2>
 
@@ -236,17 +263,16 @@ export default function FeaturedPostsSection() {
 
               </SwiperSlide>
 
-            )
+
+            ))
+          }
 
 
-          })
+          </Swiper>
 
+
+          )
         }
-
-
-
-        </Swiper>
-
 
 
       </div>
