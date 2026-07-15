@@ -3,7 +3,9 @@ import CategoriesWidget from "../widgets/CategoriesWidget";
 import RecentPostsWidget from "../widgets/RecentPostsWidget";
 import TagsWidget from "../widgets/TagsWidget";
 
-export default function Sidebar() {
+export default function Sidebar({
+  post
+}) {
   return (
     <div className="col-12 col-lg-4">
       <div className="widgets-container" data-aos="fade-up" data-aos-delay="200">
@@ -11,7 +13,9 @@ export default function Sidebar() {
         <SearchWidget />
         <CategoriesWidget />
         <RecentPostsWidget />
-        <TagsWidget />
+        <TagsWidget
+          tags={post?.tags}
+        />
 
       </div>
     </div>

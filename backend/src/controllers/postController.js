@@ -256,3 +256,239 @@ export const deletePostImage = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+export const getHomePosts = async (req, res) => {
+
+  try {
+
+    const publishedPosts = {
+      status: "published"
+    };
+
+
+    let [
+      heroPosts,
+      featuredPosts,
+      latestPosts
+    ] = await Promise.all([
+
+
+      // Hero - most viewed posts
+      Post.find(publishedPosts)
+        .sort({ views: -1 })
+        .limit(10)
+        .populate("author category"),
+
+
+
+      // Featured posts
+      Post.find({
+        ...publishedPosts,
+        featured: true
+      })
+        .sort({ createdAt: -1 })
+        .limit(6)
+        .populate("author category"),
+
+
+
+      // Latest posts
+      Post.find(publishedPosts)
+        .sort({ createdAt: -1 })
+        .limit(10)
+        .populate("author category")
+
+
+    ]);
+
+
+
+    // ===============================
+    // FEATURED POSTS FALLBACK
+    // ===============================
+
+    if (featuredPosts.length === 0) {
+
+      featuredPosts = await Post.find(publishedPosts)
+        .sort({ createdAt: -1 })
+        .limit(5)
+        .populate("author category");
+
+    }
+
+
+
+    res.json({
+
+      success: true,
+
+      heroPosts,
+
+      featuredPosts,
+
+      latestPosts
+
+    });
+
+
+
+  } catch (error) {
+
+
+    res.status(500).json({
+
+      success: false,
+
+      message: error.message
+
+    });
+
+
+  }
+
+};
+
+export const searchPosts = async (req, res) => {
+
+  try {
+
+    const query = req.query.q?.trim();
+
+
+    if (!query) {
+
+      return res.json({
+        success: true,
+        posts: []
+      });
+
+    }
+
+
+    const posts = await Post.find({
+
+      status: "published",
+
+      $or: [
+
+        {
+          title: {
+            $regex: query,
+            $options: "i"
+          }
+        },
+
+
+        {
+          excerpt: {
+            $regex: query,
+            $options: "i"
+          }
+        },
+
+
+        {
+          description: {
+            $regex: query,
+            $options: "i"
+          }
+        }
+
+      ]
+
+    })
+
+    .populate(
+      "category",
+      "name slug"
+    )
+
+    .populate(
+      "author",
+      "fullname"
+    )
+
+    .sort({
+      createdAt: -1
+    })
+
+    .limit(5);
+
+
+
+    res.json({
+
+      success:true,
+
+      posts
+
+    });
+
+
+  } catch(error) {
+
+
+    console.error(
+      "Search Error:",
+      error
+    );
+
+
+    res.status(500).json({
+
+      success:false,
+
+      message:error.message
+
+    });
+
+
+  }
+
+};
+
+// GET RECENT POSTS FOR SIDEBAR
+export const getRecentPosts = async (req, res) => {
+
+  try {
+
+    const posts = await Post.find({
+      status: "published"
+    })
+
+    .select(
+      "title slug images createdAt"
+    )
+
+    .sort({
+      createdAt: -1
+    })
+
+    .limit(5);
+
+
+
+    res.json({
+
+      success:true,
+
+      posts
+
+    });
+
+
+  } catch(error) {
+
+
+    res.status(500).json({
+
+      success:false,
+
+      message:error.message
+
+    });
+
+
+  }
+
+};

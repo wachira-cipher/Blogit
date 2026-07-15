@@ -1,104 +1,163 @@
+import { useHome } from "../../context/HomeContext";
 import PostCard from "../posts/PostCard";
+
+const API_URL = import.meta.env.VITE_API_URL;
+
+const FALLBACK_IMAGE =
+  "/assets/blog/img/blog/blog-post-3.webp";
 
 
 export default function HeroSection() {
 
+
+  const {
+    heroPosts
+  } = useHome();
+
+  console.log("Hero posts:", heroPosts);
+  console.log("Hero count:", heroPosts.length);
+
+  // Only display first 5 posts
+  const posts = heroPosts.slice(0, 5);
+
+  console.log("Displayed posts:", posts.length);
+
+
+
   return (
 
-  <>
 
-      <div 
-        className="container"
-        data-aos="fade-up"
-        data-aos-delay="100"
-      >
-
-
-        <div className="blog-grid">
+    <div
+      className="container"
+      data-aos="fade-up"
+      data-aos-delay="100"
+    >
 
 
-          <PostCard
-
-            image="/assets/blog/img/blog/blog-post-3.webp"
-
-            date="Apr. 14th, 2025"
-
-            category="Technology"
-
-            title="Lorem ipsum dolor sit amet, consectetur adipiscing elit"
-
-            featured={true}
-
-          />
+      {
+        posts.length === 0 ? (
 
 
-          <PostCard
-
-            image="/assets/blog/img/blog/blog-post-portrait-1.webp"
-
-            date="Apr. 14th, 2025"
-
-            category="Security"
-
-            title="Sed do eiusmod tempor incididunt ut labore"
-
-            delay={100}
-
-          />
+          <div className="text-center py-5">
 
 
-          <PostCard
-
-            image="/assets/blog/img/blog/blog-post-9.webp"
-
-            date="Apr. 14th, 2025"
-
-            category="Career"
-
-            title="Ut enim ad minim veniam, quis nostrud exercitation"
-
-            delay={200}
-
-          />
+            <h4>
+              Posts Unavailable.
+            </h4>
 
 
-          <PostCard
-
-            image="/assets/blog/img/blog/blog-post-7.webp"
-
-            date="Apr. 14th, 2025"
-
-            category="Cloud"
-
-            title="Adipiscing elit, sed do eiusmod tempor incididunt"
-
-            delay={300}
-
-          />
+            <p className="text-muted">
+              Check back soon for newly published articles.
+            </p>
 
 
-          <PostCard
-
-            image="/assets/blog/img/blog/blog-post-6.webp"
-
-            date="Apr. 14th, 2025"
-
-            category="Programming"
-
-            title="Excepteur sint occaecat cupidatat non proident"
-
-            delay={400}
-
-          />
+          </div>
 
 
-        </div>
+        ) : (
 
 
-      </div>
+
+          <div className="blog-grid">
 
 
-    </>
+
+            {
+              posts.map((post, index) => (
+
+
+
+                <PostCard
+
+
+                  key={post._id}
+
+
+
+                  image={
+
+                    post.images?.[0]
+
+                      ?
+
+                      `${API_URL}/uploads/${post.images[0]}`
+
+                      :
+
+                      FALLBACK_IMAGE
+
+                  }
+
+
+
+                  date={
+
+                    new Date(post.createdAt)
+                      .toLocaleDateString(
+                        "en-US",
+                        {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric"
+                        }
+                      )
+
+                  }
+
+
+
+                  category={
+
+                    post.category?.name ||
+                    "General"
+
+                  }
+
+
+
+                  title={post.title}
+
+
+
+                  slug={post.slug}
+
+
+
+                  featured={
+
+                    index === 0
+
+                  }
+
+
+
+                  delay={
+
+                    index * 100
+
+                  }
+
+
+
+                />
+
+
+
+              ))
+            }
+
+
+
+          </div>
+
+
+        )
+
+      }
+
+
+    </div>
+
 
   );
 

@@ -6,17 +6,37 @@
 * License: https://bootstrapmade.com/license/
 */
 
-(function() {
+(function () {
   "use strict";
 
   /**
    * Apply .scrolled class to the body as the page is scrolled down
    */
   function toggleScrolled() {
+
     const selectBody = document.querySelector('body');
     const selectHeader = document.querySelector('#header');
-    if (!selectHeader.classList.contains('scroll-up-sticky') && !selectHeader.classList.contains('sticky-top') && !selectHeader.classList.contains('fixed-top')) return;
-    window.scrollY > 100 ? selectBody.classList.add('scrolled') : selectBody.classList.remove('scrolled');
+
+
+    // React route without header
+    if (!selectHeader) {
+      return;
+    }
+
+
+    if (
+      !selectHeader.classList.contains('scroll-up-sticky') &&
+      !selectHeader.classList.contains('sticky-top') &&
+      !selectHeader.classList.contains('fixed-top')
+    ) {
+      return;
+    }
+
+
+    window.scrollY > 100
+      ? selectBody.classList.add('scrolled')
+      : selectBody.classList.remove('scrolled');
+
   }
 
   document.addEventListener('scroll', toggleScrolled);
@@ -52,7 +72,7 @@
    * Toggle mobile nav dropdowns
    */
   document.querySelectorAll('.navmenu .toggle-dropdown').forEach(navmenu => {
-    navmenu.addEventListener('click', function(e) {
+    navmenu.addEventListener('click', function (e) {
       e.preventDefault();
       this.parentNode.classList.toggle('active');
       this.parentNode.nextElementSibling.classList.toggle('dropdown-active');
@@ -73,37 +93,37 @@
   /**
    * Scroll top button
    */
-let scrollTop = document.querySelector('.scroll-top');
+  let scrollTop = document.querySelector('.scroll-top');
 
-function toggleScrollTop() {
+  function toggleScrollTop() {
 
-  if (!scrollTop) return;
+    if (!scrollTop) return;
 
-  window.scrollY > 100
-    ? scrollTop.classList.add('active')
-    : scrollTop.classList.remove('active');
+    window.scrollY > 100
+      ? scrollTop.classList.add('active')
+      : scrollTop.classList.remove('active');
 
-}
+  }
 
 
-if (scrollTop) {
+  if (scrollTop) {
 
-  scrollTop.addEventListener('click', (e) => {
+    scrollTop.addEventListener('click', (e) => {
 
-    e.preventDefault();
+      e.preventDefault();
 
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth'
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+
     });
 
-  });
-
-}
+  }
 
 
-window.addEventListener('load', toggleScrollTop);
-document.addEventListener('scroll', toggleScrollTop);
+  window.addEventListener('load', toggleScrollTop);
+  document.addEventListener('scroll', toggleScrollTop);
   /**
    * Animation on scroll function and init
    */
@@ -121,7 +141,7 @@ document.addEventListener('scroll', toggleScrollTop);
    * Init swiper sliders
    */
   function initSwiper() {
-    document.querySelectorAll(".init-swiper").forEach(function(swiperElement) {
+    document.querySelectorAll(".init-swiper").forEach(function (swiperElement) {
       let config = JSON.parse(
         swiperElement.querySelector(".swiper-config").innerHTML.trim()
       );

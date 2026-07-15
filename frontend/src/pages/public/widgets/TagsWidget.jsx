@@ -1,29 +1,71 @@
-export default function TagsWidget() {
-  const tags = [
-    "App",
-    "IT",
-    "Business",
-    "Mac",
-    "Design",
-    "Office",
-    "Creative",
-    "Studio",
-    "Smart",
-    "Tips",
-    "Marketing",
-  ];
+import { Link } from "react-router-dom";
 
-  return (
-    <div className="tags-widget widget-item">
-      <h3 className="widget-title">Tags</h3>
 
-      <ul>
-        {tags.map((tag, index) => (
-          <li key={index}>
-            <a href="#">{tag}</a>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
+export default function TagsWidget({
+  tags=[]
+}) {
+
+
+return (
+
+<div className="tags-widget widget-item">
+
+
+<h3 className="widget-title">
+Tags
+</h3>
+
+
+
+<ul>
+
+
+{
+tags.length === 0 && (
+
+<li>
+<a href="#">
+No tags
+</a>
+</li>
+
+)
+
+}
+
+
+
+{
+tags.map((tag)=>(
+
+
+<li key={tag._id}>
+
+
+<Link
+to={`/tag/${tag.slug}`}
+>
+
+{tag.name}
+
+</Link>
+
+
+</li>
+
+
+))
+
+}
+
+
+
+</ul>
+
+
+</div>
+
+);
+
+
 }

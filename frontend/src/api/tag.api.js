@@ -24,3 +24,15 @@ export const updateTag = (id, data) => {
 export const deleteTag = (id) => {
   return http.delete(`/tags/${id}`);
 };
+
+export const getTagPosts = (
+  slug,
+  page = 1,
+  limit = 6
+) => {
+
+  return http.get(
+    `/tags/${slug}/posts?page=${page}&limit=${limit}`
+  );
+
+};

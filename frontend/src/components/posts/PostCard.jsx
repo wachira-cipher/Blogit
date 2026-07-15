@@ -7,6 +7,7 @@ export default function PostCard({
   date,
   category,
   title,
+  slug,
   featured,
   delay = 0,
 
@@ -25,12 +26,11 @@ export default function PostCard({
 
     >
 
-
       <img
 
         src={image}
 
-        alt="Blog Image"
+        alt={title}
 
         className="img-fluid"
 
@@ -42,63 +42,51 @@ export default function PostCard({
 
         <div className="post-meta">
 
-
           <span className="date">
-
             {date}
-
           </span>
 
 
           <span className="category">
-
             {category}
-
           </span>
-
 
         </div>
 
 
 
-        {featured ? (
+        {
+          featured ? (
+
+            <h2 className="post-title">
+
+              <Link to={`/blog-details/${slug}`}>
+
+                {title}
+
+              </Link>
+
+            </h2>
 
 
-          <h2 className="post-title">
+          ) : (
 
 
-            <Link to="/post/sample-slug">
+            <h3 className="post-title">
 
-              {title}
+              <Link to={`/blog-details/${slug}`}>
 
-            </Link>
+                {title}
 
+              </Link>
 
-          </h2>
+            </h3>
 
-
-        ) : (
-
-
-          <h3 className="post-title">
-
-
-            <Link to="/post/sample-slug">
-
-              {title}
-
-            </Link>
-
-
-          </h3>
-
-
-        )}
-
+          )
+        }
 
 
       </div>
-
 
     </article>
 

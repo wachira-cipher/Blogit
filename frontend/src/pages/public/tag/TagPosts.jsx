@@ -1,32 +1,32 @@
-import PostItem from "./PostItem";
+import PostItem from "./TagPostItem";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-
-export default function CategoryPosts({
+export default function TagPosts({
   posts = []
 }) {
-
 
   if (posts.length === 0) {
 
     return (
+
       <section className="category-posts section">
 
         <div className="container">
 
           <div className="alert alert-info">
-            No posts found in this category yet.
+
+            No posts found with this tag yet.
+
           </div>
 
         </div>
 
       </section>
+
     );
 
   }
-
-
 
   return (
 
@@ -38,22 +38,16 @@ export default function CategoryPosts({
         data-aos-delay="100"
       >
 
-
         <div className="row gy-4">
 
-
           {
-            posts.map((post) => {
 
+            posts.map((post) => {
 
               const image =
                 post.images?.length
-                  ?
-                  `${API_URL}/uploads/${post.images[0]}`
-                  :
-                  "/assets/blog/img/blog/blog-post-1.webp";
-
-
+                  ? `${API_URL}/uploads/${post.images[0]}`
+                  : "/assets/blog/img/blog/blog-post-1.webp";
 
               return (
 
@@ -70,24 +64,18 @@ export default function CategoryPosts({
                     "General"
                   }
 
-
                   title={post.title}
-
 
                   authorImg={
                     post.author?.avatar
-                      ?
-                      `${API_URL}${post.author.avatar.startsWith("/") ? "" : "/"}${post.author.avatar}`
-                      :
-                      "/assets/blog/img/person/author.jpg"
+                      ? `${API_URL}${post.author.avatar.startsWith("/") ? "" : "/"}${post.author.avatar}`
+                      : "/assets/blog/img/person/author.jpg"
                   }
-
 
                   author={
                     post.author?.fullname ||
                     "Unknown Author"
                   }
-
 
                   date={
                     new Date(
@@ -97,26 +85,22 @@ export default function CategoryPosts({
                       {
                         month: "short",
                         day: "numeric",
-                        year: "numeric"
+                        year: "numeric",
                       }
                     )
                   }
-
 
                 />
 
               );
 
-
             })
-          }
 
+          }
 
         </div>
 
-
       </div>
-
 
     </section>
 

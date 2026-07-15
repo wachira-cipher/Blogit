@@ -2,6 +2,9 @@
 /****** Utils ******/
 @import url("https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700&amp;display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&amp;display=swap");
+
+
+
 .search-dropdown .search-info .customers li a img {
   -webkit-transition: all 0.5s;
   -moz-transition: all 0.5s;
@@ -20237,6 +20240,7 @@ body.layout-mode-rtl .item-list p::before {
     max-width: 100%;
   }
 }
+
 [data-layout=horizontal][data-width=box] .header .main-header .user-menu,
 [data-layout=horizontal-overlay][data-width=box] .header .main-header .user-menu {
   padding-right: 0;
@@ -20427,6 +20431,7 @@ body.layout-mode-rtl .item-list p::before {
 [data-layout=horizontal] .header .main-header .user-menu {
   padding-right: 0;
 }
+
 [data-layout=horizontal] .header .header-left {
   display: block;
 }

@@ -35,3 +35,20 @@ export const deletePostImage = (postId, filename) => {
 export const getDashboardStats = () => {
   return http.get("/users/dashboard/stats");
 };
+
+
+export const getHomePosts = () => {
+  return http.get("/posts/home");
+};
+
+export const searchPosts = (query) => {
+  return http.get(`/posts/search?q=${encodeURIComponent(query)}`);
+};
+
+export const getRecentPosts = () => {
+
+  return http.get(
+    "/posts/recent"
+  );
+
+};

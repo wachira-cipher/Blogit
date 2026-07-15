@@ -1,26 +1,126 @@
-export default function CategoriesWidget() {
-  const categories = [
-    { name: "General", count: 25 },
-    { name: "Lifestyle", count: 12 },
-    { name: "Travel", count: 5 },
-    { name: "Design", count: 22 },
-    { name: "Creative", count: 8 },
-    { name: "Education", count: 14 },
-  ];
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { getCategoriesWithCount } from "../../../api/category.api";
+
+
+export default function CategoriesWidget(){
+
+  const [categories,setCategories]=useState([]);
+  const [loading,setLoading]=useState(true);
+
+
+  useEffect(()=>{
+
+
+    const loadCategories=async()=>{
+
+      try{
+
+        const res = await getCategoriesWithCount();
+
+
+        if(res.data.success){
+
+          setCategories(
+            res.data.categories
+          );
+
+        }
+
+
+      }catch(error){
+
+        console.log(error);
+
+      }
+      finally{
+
+        setLoading(false);
+
+      }
+
+    };
+
+
+    loadCategories();
+
+
+  },[]);
+
+
 
   return (
+
     <div className="categories-widget widget-item">
-      <h3 className="widget-title">Categories</h3>
+
+
+      <h3 className="widget-title">
+        Categories
+      </h3>
+
+
 
       <ul className="mt-3">
-        {categories.map((cat, index) => (
-          <li key={index}>
-            <a href="#">
-              {cat.name} <span>({cat.count})</span>
-            </a>
-          </li>
-        ))}
+
+
+        {
+          loading && (
+
+            <li>
+              Loading categories...
+            </li>
+
+          )
+        }
+
+
+
+        {
+          !loading &&
+          categories.length===0 && (
+
+            <li>
+              No categories found
+            </li>
+
+          )
+        }
+
+
+
+        {
+          categories.map((cat)=>(
+
+
+            <li key={cat._id}>
+
+
+              <Link
+                to={`/category/${cat.slug}`}
+              >
+
+                {cat.name}
+
+                <span>
+                  ({cat.count})
+                </span>
+
+
+              </Link>
+
+
+            </li>
+
+
+          ))
+        }
+
+
       </ul>
+
+
     </div>
+
   );
+
 }
