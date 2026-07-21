@@ -26,10 +26,17 @@ export const deletePost = (id) => {
 };
 
 // DELETE SINGLE IMAGE FROM POST (DB + FILESYSTEM)
-export const deletePostImage = (postId, filename) => {
-  return http.delete(`/posts/${postId}/image`, {
-    data: { filename }
-  });
+export const deletePostImage = (id, filename) => {
+
+  return http.delete(
+    `/posts/${id}/image`,
+    {
+      data:{
+        filename
+      }
+    }
+  );
+
 };
 
 export const getDashboardStats = () => {

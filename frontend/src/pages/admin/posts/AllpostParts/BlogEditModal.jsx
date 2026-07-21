@@ -4,12 +4,19 @@ import { toast } from "react-toastify";
 import BlogCategorySection from "../createparts/BlogCategorySection";
 import BlogTagSection from "../createparts/BlogTagSection";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
+const FALLBACK_IMAGE =
+  "/assets/blog/img/blog/blog-post-3.webp";
+
+
 export default function BlogEditModal({
   post,
   categories = [],
   tags = [],
   onUpdated
 }) {
+  const [loading, setLoading] = useState(false);
 
   const [form, setForm] = useState({
     title: "",
@@ -17,10 +24,14 @@ export default function BlogEditModal({
     tags: [],
     description: "",
     status: "draft",
-    Image: "",
-    imageFile: null,
 
-    // 🔥 keep server images separately
+    // new uploaded images
+    imageFiles: [],
+
+    // preview URLs for new images
+    imagePreviews: [],
+
+    // existing database images
     existingImages: []
   });
 
@@ -28,28 +39,45 @@ export default function BlogEditModal({
   // HYDRATION
   // ======================
   useEffect(() => {
+
     if (!post) return;
 
+
     setForm({
+
       title: post.title || "",
+
       category: post.category?._id || "",
 
-      // ✅ FIXED TAG HYDRATION (always clean IDs)
+
       tags: Array.isArray(post.tags)
+
         ? post.tags
-          .map(t => typeof t === "string" ? t : t?._id)
+          .map(t =>
+            typeof t === "string"
+              ? t
+              : t?._id
+          )
           .filter(Boolean)
+
         : [],
 
+
       description: post.description || "",
+
       status: post.status || "draft",
 
-      Image: post.Image || post.images?.[0] || "",
-      imageFile: null,
 
-      // existing images from DB
+      imageFiles: [],
+
+      imagePreviews: [],
+
+
       existingImages: post.images || []
+
     });
+
+
   }, [post]);
 
   // ======================
@@ -72,69 +100,203 @@ export default function BlogEditModal({
   // IMAGE UPLOAD (NEW)
   // ======================
   const handleImage = (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+
+    const files = Array.from(e.target.files);
+
+
+    if (!files.length) return;
+
+
+    const previews = files.map(file =>
+      URL.createObjectURL(file)
+    );
+
 
     setForm(prev => ({
+
       ...prev,
-      imageFile: file,
-      Image: URL.createObjectURL(file)
+
+      imageFiles: [
+        ...prev.imageFiles,
+        ...files
+      ],
+
+
+      imagePreviews: [
+        ...prev.imagePreviews,
+        ...previews
+      ]
+
     }));
+
   };
 
   // ======================
   // DELETE IMAGE FROM DB
   // ======================
   const handleDeleteImage = async (filename) => {
+
     try {
-      const res = await deletePostImage(post._id, filename);
+
+      const res = await deletePostImage(
+        post._id,
+        filename
+      );
+
 
       toast.success("Image removed");
 
-      // update local form after DB sync
-      onUpdated?.(res.data);
 
-      // also update preview state instantly
+      // update parent
+      onUpdated?.({
+        ...post,
+        images: res.data.images
+      });
+
+
+
       setForm(prev => ({
+
         ...prev,
-        Image: res.data.images?.[0] || "",
-        imageFile: null
+
+        existingImages:
+          res.data.images || [],
+
+
+        // clear new previews if needed
+        imagePreviews:
+          prev.imagePreviews.filter(
+            img => !img.includes(filename)
+          )
+
       }));
 
-    } catch (err) {
-      toast.error("Failed to delete image");
-    }
-  };
 
+    } catch (err) {
+
+      console.error(err);
+
+      toast.error(
+        err.response?.data?.message ||
+        "Failed to delete image"
+      );
+
+    }
+
+  };
   // ======================
   // SUBMIT
   // ======================
   const handleSubmit = async (e) => {
+
     e.preventDefault();
 
+
     try {
+
+      setLoading(true);
+
+
       const payload = new FormData();
 
-      payload.append("title", form.title);
-      payload.append("category", form.category);
-      payload.append("description", form.description);
-      payload.append("status", form.status);
 
-      // ✅ FIXED TAGS
-      payload.append("tags", JSON.stringify(form.tags));
+      payload.append(
+        "title",
+        form.title
+      );
 
-      if (form.imageFile) {
-        payload.append("Image", form.imageFile);
-      }
 
-      const res = await updatePost(post._id, payload);
+      payload.append(
+        "category",
+        form.category
+      );
 
-      toast.success("Blog updated successfully");
+
+      payload.append(
+        "description",
+        form.description
+      );
+
+
+      payload.append(
+        "status",
+        form.status
+      );
+
+
+      payload.append(
+        "tags",
+        JSON.stringify(form.tags)
+      );
+
+
+      // multiple images
+      form.imageFiles.forEach(file => {
+
+        payload.append(
+          "images",
+          file
+        );
+
+      });
+
+
+
+      const res = await updatePost(
+        post._id,
+        payload
+      );
+
+
+      toast.success(
+        "Blog updated successfully"
+      );
+
+
+      // update parent
       onUpdated?.(res.data);
 
+
+
+      // ==========================
+      // CLOSE BOOTSTRAP MODAL
+      // ==========================
+
+      const modalElement =
+        document.getElementById("edit_blog");
+
+
+      const modal =
+        window.bootstrap.Modal.getInstance(
+          modalElement
+        );
+
+
+      if (modal) {
+
+        modal.hide();
+
+      }
+
+
+
     } catch (err) {
-      toast.error(err.response?.data?.message || "Update failed");
+
+
+      toast.error(
+        err.response?.data?.message ||
+        "Update failed"
+      );
+
+
+    } finally {
+
+
+      setLoading(false);
+
+
     }
+
   };
 
   if (!post) return null;
@@ -175,17 +337,27 @@ export default function BlogEditModal({
                       {/* show uploaded preview OR fallback OR first DB image */}
                       <img
                         src={
-                          form.Image ||
-                          (form.existingImages?.length
-                            ? `/uploads/${form.existingImages[0]}`
-                            : "/assets/auth/img/blogs/blog-02.jpg")
+                          form.imagePreviews?.length
+                            ? form.imagePreviews[0]
+                            : form.existingImages?.length
+                              ? `${API_URL}/uploads/${form.existingImages[0]}`
+                              : FALLBACK_IMAGE
                         }
                         alt="Img"
+                        onError={(e) => {
+                          e.currentTarget.onerror = null;
+                          e.currentTarget.src = FALLBACK_IMAGE;
+                        }}
                       />
 
                     </div>
 
-                    <input type="file" onChange={handleImage} />
+                    <input
+                      type="file"
+                      multiple
+                      accept="image/*"
+                      onChange={handleImage}
+                    />
 
                   </div>
                 </div>
@@ -199,11 +371,16 @@ export default function BlogEditModal({
                       <div key={i} className="position-relative d-inline-block">
 
                         <img
-                          src={`/uploads/${img}`}
+                          src={img ? `${API_URL}/uploads/${img}` : FALLBACK_IMAGE}
                           className="img-thumbnail"
                           width="80"
                           height="80"
                           style={{ objectFit: "cover" }}
+                          alt="Blog post"
+                          onError={(e) => {
+                            e.currentTarget.onerror = null;
+                            e.currentTarget.src = FALLBACK_IMAGE;
+                          }}
                         />
 
                         {/* DELETE ICON */}
@@ -217,6 +394,40 @@ export default function BlogEditModal({
 
                       </div>
                     ))}
+
+                  </div>
+
+                </div>
+                <div className="col-md-12 mt-2">
+
+                  <div className="d-flex flex-wrap gap-2">
+
+
+                    {
+                      form.imagePreviews.map((img, index) => (
+
+                        <div
+                          key={index}
+                          className="position-relative"
+                        >
+
+                          <img
+                            src={img}
+                            className="img-thumbnail"
+                            width="80"
+                            height="80"
+                            style={{
+                              objectFit: "cover"
+                            }}
+                            alt="preview"
+                          />
+
+
+                        </div>
+
+                      ))
+                    }
+
 
                   </div>
 
@@ -320,8 +531,27 @@ export default function BlogEditModal({
                 Cancel
               </button>
 
-              <button type="submit" className="btn btn-primary">
-                Save Changes
+              <button
+                type="submit"
+                className="btn btn-primary"
+                disabled={loading}
+              >
+
+                {
+                  loading ? (
+                    <>
+                      <span
+                        className="spinner-border spinner-border-sm me-2"
+                        role="status"
+                      ></span>
+
+                      Saving...
+                    </>
+                  ) : (
+                    "Save Changes"
+                  )
+                }
+
               </button>
 
             </div>

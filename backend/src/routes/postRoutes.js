@@ -11,6 +11,7 @@ import {
   getHomePosts,
   searchPosts,
   getRecentPosts,
+  deletePostImage
 } from "../controllers/postController.js";
 
 
@@ -68,9 +69,16 @@ router.get(
 // UPDATE
 router.put(
   "/:id",
+  protect,
+  upload.array("images", 10),
   updatePost
 );
-
+// DELETE SINGLE POST IMAGE
+router.delete(
+  "/:id/image",
+  protect,
+  deletePostImage
+);
 
 // DELETE
 router.delete(
