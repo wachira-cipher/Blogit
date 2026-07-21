@@ -1,4 +1,6 @@
 import Post from "../models/Post.js";
+import fs from "fs";
+import path from "path";
 
 
 /* =========================
@@ -160,52 +162,130 @@ export const getPost = async (req, res) => {
     });
   }
 };
-
 /* =========================
-   UPDATE POST (FIXED)
+   UPDATE POST
+   Supports multiple images
 ========================= */
 export const updatePost = async (req, res) => {
   try {
-    const { tags, ...rest } = req.body;
+
+    const body = req.body || {};
+
+    const {
+      tags,
+      ...rest
+    } = body;
+
 
     const updateData = {
       ...rest,
     };
 
-    // handle Image consistency
-    if (rest.Image !== undefined) {
-      updateData.Image = rest.Image;
-    }
 
-    // safe tags handling
+    // =========================
+    // TAGS HANDLING
+    // =========================
     if (tags !== undefined) {
-      updateData.tags = Array.isArray(tags)
-        ? tags.filter(Boolean)
-        : typeof tags === "string"
-          ? JSON.parse(tags || "[]")
-          : [];
+
+      updateData.tags =
+        Array.isArray(tags)
+
+          ? tags.filter(Boolean)
+
+          : typeof tags === "string"
+
+            ? JSON.parse(tags || "[]")
+
+            : [];
+
     }
 
+
+
+    // =========================
+    // MULTIPLE IMAGE UPLOAD
+    // =========================
+    if (req.files && req.files.length > 0) {
+
+
+      const newImages = req.files.map(
+        file => file.filename
+      );
+
+
+      const existingPost = await Post.findById(
+        req.params.id
+      );
+
+
+      if (!existingPost) {
+
+        return res.status(404).json({
+          message: "Post not found"
+        });
+
+      }
+
+
+      updateData.images = [
+        ...(existingPost.images || []),
+        ...newImages
+      ];
+
+
+    }
+
+
+
+    // =========================
+    // UPDATE DATABASE
+    // =========================
     const post = await Post.findByIdAndUpdate(
+
       req.params.id,
+
       updateData,
-      { new: true }
+
+      {
+        new: true
+      }
+
     )
       .populate("category")
       .populate("tags")
       .populate("author");
 
+
+
     if (!post) {
+
       return res.status(404).json({
-        message: "Post not found",
+
+        message: "Post not found"
+
       });
+
     }
 
+
+
     res.json(post);
+
+
+
   } catch (error) {
+
+
+    console.error("UPDATE POST ERROR:", error);
+
+
     res.status(500).json({
-      message: error.message,
+
+      message: error.message
+
     });
+
+
   }
 };
 
@@ -232,29 +312,97 @@ export const deletePost = async (req, res) => {
   }
 };
 
+
+
+
 export const deletePostImage = async (req, res) => {
+
   try {
+
+    const { id } = req.params;
+
     const { filename } = req.body;
 
-    const post = await Post.findById(req.params.id);
-    if (!post) return res.status(404).json({ message: "Post not found" });
 
-    // remove from DB array
-    post.images = post.images.filter(img => img !== filename);
+    if (!filename) {
+
+      return res.status(400).json({
+
+        message: "Image filename required"
+
+      });
+
+    }
+
+
+    const post = await Post.findById(id);
+
+
+    if (!post) {
+
+      return res.status(404).json({
+
+        message: "Post not found"
+
+      });
+
+    }
+
+
+    // remove from database
+    post.images = post.images.filter(
+      img => img !== filename
+    );
+
+
     await post.save();
 
-    // remove from filesystem
-    const filePath = path.join("uploads", filename);
 
-    fs.unlink(filePath, (err) => {
-      if (err) console.log("File delete error:", err.message);
+
+    // remove physical file
+    const imagePath = path.join(
+      process.cwd(),
+      "uploads",
+      filename
+    );
+
+
+    if (fs.existsSync(imagePath)) {
+
+      fs.unlinkSync(imagePath);
+
+    }
+
+
+
+    res.json({
+
+      message: "Image deleted",
+
+      images: post.images
+
     });
 
-    res.json(post);
 
-  } catch (err) {
-    res.status(500).json({ message: err.message });
+
+  } catch (error) {
+
+
+    console.error(
+      "DELETE IMAGE ERROR:",
+      error
+    );
+
+
+    res.status(500).json({
+
+      message: error.message
+
+    });
+
+
   }
+
 };
 
 export const getHomePosts = async (req, res) => {
@@ -398,34 +546,34 @@ export const searchPosts = async (req, res) => {
 
     })
 
-    .populate(
-      "category",
-      "name slug"
-    )
+      .populate(
+        "category",
+        "name slug"
+      )
 
-    .populate(
-      "author",
-      "fullname"
-    )
+      .populate(
+        "author",
+        "fullname"
+      )
 
-    .sort({
-      createdAt: -1
-    })
+      .sort({
+        createdAt: -1
+      })
 
-    .limit(5);
+      .limit(5);
 
 
 
     res.json({
 
-      success:true,
+      success: true,
 
       posts
 
     });
 
 
-  } catch(error) {
+  } catch (error) {
 
 
     console.error(
@@ -436,9 +584,9 @@ export const searchPosts = async (req, res) => {
 
     res.status(500).json({
 
-      success:false,
+      success: false,
 
-      message:error.message
+      message: error.message
 
     });
 
@@ -456,35 +604,35 @@ export const getRecentPosts = async (req, res) => {
       status: "published"
     })
 
-    .select(
-      "title slug images createdAt"
-    )
+      .select(
+        "title slug images createdAt"
+      )
 
-    .sort({
-      createdAt: -1
-    })
+      .sort({
+        createdAt: -1
+      })
 
-    .limit(5);
+      .limit(5);
 
 
 
     res.json({
 
-      success:true,
+      success: true,
 
       posts
 
     });
 
 
-  } catch(error) {
+  } catch (error) {
 
 
     res.status(500).json({
 
-      success:false,
+      success: false,
 
-      message:error.message
+      message: error.message
 
     });
 
